@@ -28,8 +28,8 @@ let options = {
 }; 
 
 cron.schedule('* * * * *', () => {  // 1분 간격
-    testQuery = "TRUNCATE covid";
-    connection.query(testQuery, function (err, results, fields) { // testQuery 실행
+    TruncateQuery = "TRUNCATE covid";
+    connection.query(TruncateQuery, function (err, results, fields) { // testQuery 실행
     
     if (err) {
         console.log(err);
@@ -45,17 +45,27 @@ cron.schedule('* * * * *', () => {  // 1분 간격
             var item = info['response']['body']['items']['item'][i];
             
             // console.log(item)
-            var testQuery = "INSERT INTO `covid` (`gubun`,`defCnt`,`localOccCnt`,`seq`,`stdDay`) " +
+            var InsertQuery = "INSERT INTO `covid` (`gubun`,`defCnt`,`localOccCnt`,`seq`,`stdDay`) " +
                 " VALUES ( ?, ?, ?, ?, ? );";
                 
             var param = [item.gubun, item.defCnt, item.localOccCnt, item.seq, item.stdDay];
 
-            connection.query(testQuery, param, function (err, results, fields) { // testQuery 실행
+            connection.query(InsertQuery, param, function (err, results, fields) { // testQuery 실행
                 if (err) {
                     console.log(err);
                 }
                 console.log(results);
             });
-        } 
+        }
+
+        UpdateQuery = "UPDATE covid SET stdDay=REPLACE(`stdDay`, '년', '-'), stdDay=REPLACE(`stdDay`, '월', '-'), stdDay=REPLACE(`stdDay`, '일', '-'), stdDay=REPLACE(`stdDay`, '시', ' '), stdDay=REPLACE(`stdDay`, ' ', '');";
+        connection.query(UpdateQuery, function (err, results, fields) { // testQuery 실행
+        
+        if (err) {
+            console.log(err);
+            }
+                console.log(results);
+        });
+        
     })
 });
