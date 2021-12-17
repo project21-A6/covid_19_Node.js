@@ -1,17 +1,17 @@
-const mysql = require('mysql');  // mysql 모듈 로드
-var cron = require('node-cron'); //node-cron 모듈 로드
+const mysql = require('mysql'); 
+var d = new Date();
 
-const conn = {  // mysql 접속 설정
-    host: '127.0.0.1',
-    port: '3306',
-    user: 'root',
-    password: '1234',
-    database: 'project'
+const conn = { 
+	host: '127.0.0.1',
+	port: '3306',
+	user: 'root',
+	password: '1234',
+	database: 'project'
 };
 
-var connection = mysql.createConnection(conn); // DB 커넥션 생성
+var connection = mysql.createConnection(conn); 
 
-connection.connect();   // DB 접속
+connection.connect();
 
 const ServiceKey = 'AyVKbrD9aJmUDeMcNxMuZPIvs78VlFkBtxOvWSzXB2htFBN%2F%2B%2BMSz%2BhbkGMM%2BwrxqGL6xQ3CLC2J%2FeeU77y1iA%3D%3D'; 
 const pageNo = 1; 
@@ -27,16 +27,6 @@ let options = {
     'headers': { 'Accept':'application/json' } 
 }; 
 
-cron.schedule('* * * * *', () => {  // 1분 간격
-    TruncateQuery = "TRUNCATE covid";
-    connection.query(TruncateQuery, function (err, results, fields) { // testQuery 실행
-    
-    if (err) {
-        console.log(err);
-        }
-            console.log(results);
-    });
- 
     request(options, function (error, response, body) { 
         if (error) { throw new Error(error); } 
         let info = JSON.parse(body); 
@@ -44,17 +34,17 @@ cron.schedule('* * * * *', () => {  // 1분 간격
         for (i in info['response']['body']['items']['item']) { 
             var item = info['response']['body']['items']['item'][i];
             
-            // console.log(item)
-            var InsertQuery = "INSERT INTO `covid` (`gubun`,`defCnt`,`localOccCnt`,`seq`,`stdDay`) " +
+            var ReplaceQuery = "REPLACE INTO `covid` (`gubun`,`defCnt`,`localOccCnt`,`seq`,`stdDay`) " +
                 " VALUES ( ?, ?, ?, ?, ? );";
                 
             var param = [item.gubun, item.defCnt, item.localOccCnt, item.seq, item.stdDay];
 
-            connection.query(InsertQuery, param, function (err, results, fields) { // testQuery 실행
+            console.log("'"+item.gubun+"' 항목이 삽입되었습니다.");
+
+            connection.query(ReplaceQuery, param, function (err, results, fields) { // testQuery 실행
                 if (err) {
                     console.log(err);
                 }
-                console.log(results);
             });
         }
 
@@ -62,10 +52,8 @@ cron.schedule('* * * * *', () => {  // 1분 간격
         connection.query(UpdateQuery, function (err, results, fields) { // testQuery 실행
         
         if (err) {
-            console.log(err);
+                console.log(err);
             }
-                console.log(results);
+            console.log(d.getFullYear()+"년 "+(d.getMonth() + 1)+"월 "+d.getDate()+"일 "+d.getHours()+"시 "+d.getMinutes()+"분 "+d.getSeconds()+"초에 갱신되었습니다.");
         });
-        
-    })
-});
+    });
