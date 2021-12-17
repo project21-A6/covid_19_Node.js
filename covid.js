@@ -56,4 +56,13 @@ let options = {
             }
             console.log(d.getFullYear()+"년 "+(d.getMonth() + 1)+"월 "+d.getDate()+"일 "+d.getHours()+"시 "+d.getMinutes()+"분 "+d.getSeconds()+"초에 갱신되었습니다.");
         });
+
+        TestQuery = "UPDATE ";
+        connection.query(TestQuery, function (err, results, fields) { // testQuery 실행
+        
+        if (err) {
+                console.log(err);
+            }
+            console.log("순서조정...");
+        });
     });
