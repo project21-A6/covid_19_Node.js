@@ -1,4 +1,5 @@
 const mysql = require('mysql'); 
+var cron = require('node-cron'); 
 var d = new Date();
 
 const conn = { 
@@ -27,6 +28,7 @@ let options = {
     'headers': { 'Accept':'application/json' } 
 }; 
 
+cron.schedule('0 * * * *', () => { 
     request(options, function (error, response, body) { 
         if (error) { throw new Error(error); } 
         let info = JSON.parse(body); 
@@ -56,13 +58,18 @@ let options = {
             }
             console.log(d.getFullYear()+"년 "+(d.getMonth() + 1)+"월 "+d.getDate()+"일 "+d.getHours()+"시 "+d.getMinutes()+"분 "+d.getSeconds()+"초에 갱신되었습니다.");
         });
+    })
+});
 
-        TestQuery = "UPDATE ";
-        connection.query(TestQuery, function (err, results, fields) { // testQuery 실행
-        
-        if (err) {
-                console.log(err);
-            }
-            console.log("순서조정...");
-        });
+/*
+cron.schedule('0 0 * * *', () => {
+    DeleteQuery = "DELETE FROM covid WHERE 1=1;";
+    connection.query(DeleteQuery, function (err, results, fields) { // testQuery 실행
+    
+    if (err) {
+            console.log(err);
+        }
+        console.log(d.getFullYear()+"년 "+(d.getMonth() + 1)+"월 "+d.getDate()+"일 "+d.getHours()+"시 "+d.getMinutes()+"분 "+d.getSeconds()+"초에 데이터베이스를 초기화하였습니다.");
     });
+});
+*/
